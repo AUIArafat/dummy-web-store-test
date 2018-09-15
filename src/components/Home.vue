@@ -1,13 +1,20 @@
 <template>
   <div>
     <div class="col-lg-12 col-sm-13">
-      <h4>Price Range</h4>
+      <h4>Price Range:</h4>
       <a class="filters" @click.prevent="setFilter(0,2500)" style="cursor:pointer"> Under £25 </a> |
       <a class="filters"  @click.prevent="setFilter(2501,5000)" style="cursor:pointer"> £25 to £50 </a> |
       <a class="filters"  @click.prevent="setFilter(5001,10000)" style="cursor:pointer"> £51 to £100 </a> |
       <a class="filters"  @click.prevent="setFilter(10000, 1000000)" style="cursor:pointer"> Over £100 </a> |
       <span class="filters" @click.prevent="setFilter(0, 1000000)" style="cursor:pointer">All</span>
     </div>
+      <div class="col-lg-12 col-sm-13">
+      <h4>Stock Availability:</h4>
+      <a class="filters" @click.prevent="setFilterByStock('in-stock')" style="cursor:pointer"> In Stock</a> |
+      <a class="filters"  @click.prevent="setFilterByStock('out-stock')" style="cursor:pointer"> Out Stock </a> |
+      <span class="filters" @click.prevent="setFilterByStock('all')" style="cursor:pointer">All</span>
+    </div>
+    
     <div class="ui items" v-for="product in this.products.data" :key="product.id">
       <div class="item">
         <router-link :to="'/products/' + product.slug" class="ui small image">
@@ -20,7 +27,7 @@
           <div class="meta">{{ getProductPrice(product) }}</div>
           <div class="description">{{ product.sku }}</div>
           <div class="description">{{ product.meta.stock.availability}} ({{product.meta.stock.level}})</div>
-          <div class="description">{{ product.relationships.categories }}</div>
+          <div class="description">{{ getCategoryName(product) }}</div>
           <div class="description">{{ product.unit_price }}</div>
         </div>
       </div>
@@ -95,7 +102,48 @@
     			});   
           this.products.data = list 			
     			console.log(this.products.data)
+      },
+      setFilterByStock (stockAvailability) {
+        MoltinService.getHomepageProducts().then((response) => {
+          this.tempProducts = response
+          console.log(this.products + this.products.length)
+        })
+        console.log(Object.keys(this.tempProducts ).length +  " tempPro");
+        if(Object.keys(this.tempProducts ).length!= 0 ){
+          this.products = this.tempProducts
+        }
+        var items  = this.products;
+	      var list = [];
+        console.log(items)
+				var result = Object.keys(items.data).map(function(key) {
+          try{
+            console.log(items.data[key].meta + " " + key)
+            if (stockAvailability === 'all') {
+              list.push(items.data[key])
+            }
+        		else if (items.data[key].meta.stock.availability === stockAvailability) list.push(items.data[key])
+          } catch(e){
+
+          }
+    			});   
+          this.products.data = list 			
+    			console.log(this.products.data)
+      },
+      getCategoryName (product) {
+        var category = ''
+        try {
+          var categories = {};
+          console.log(product.relationships.categories.data[0].id)
+          MoltinService.getCategoryById(product.relationships.categories.data[0].id).then((response) => {
+          this.categories = response
+          console.log(this.categories.data.name)
+        })
+          return this.categories.data.name || category
+        } catch (e) {
+          return category
+        }
       }
+      
     }
   }
 </script>

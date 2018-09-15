@@ -9,7 +9,7 @@
         <div class="ui divided items">
           <div class="item" v-for="item in cart.data" :key="item.id">
             <div class="ui small image">
-              <img v-bind:src="item.image.href" alt="">
+              <img v-bind:src="getProductThumb(item)" alt="">
             </div>
             <div class="content">
               <div class="header">{{ item.name }}</div>
@@ -25,7 +25,7 @@
         <div class="ui large clearing segment">
           <strong>Sub total:</strong> {{ cart.meta.display_price.with_tax.formatted }}
           <span>
-            <router-link :to="'/checkout'" class="ui black right floated button">Checkout</router-link>
+            <span class="ui black right floated button">Checkout</span>
           </span>
         </div>
       </div>
@@ -42,7 +42,19 @@ export default {
       MoltinService.removeFromCart(itemId).then((response) => {
         this.$emit('cart-updated', response)
       })
-    }
+    },
+    getProductThumb: function (product) {
+        console.log(product)
+        var placeholder = 'https://placeholdit.imgix.net/~text?txtsize=69&txt=824%C3%971050&w=824&h=1050'
+        try {
+          var fileId = product.relationships.files.data[1].id
+          console.log(fileId)
+          var imgSrc = 'https://s3-eu-west-1.amazonaws.com/bkt-svc-files-cmty-api-moltin-com/ef4e860a-1d01-4e5c-a6a8-427cfa48a668/' + fileId + '.jpg'
+          return imgSrc || placeholder
+        } catch (e) {
+          return placeholder
+        }
+      }
   }
 }
 </script>

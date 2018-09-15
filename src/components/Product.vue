@@ -3,7 +3,7 @@
     <div class="ui items">
       <div class="item">
         <div class="ui medium image">
-          <img :src="product.included.main_images[0].link.href" alt="">
+          <img :src="getProductThumb(product.data[0])" alt="">
         </div>
         <div class="content">
           <div class="header">{{ product.data[0].name }}</div>
@@ -22,8 +22,6 @@
         </div>
       </div>
     </div>
-    <h3 class="ui header">About this product</h3>
-    <p>{{ product.data[0].description }}</p>
     <div class="ui divider"></div>
     <table class="ui celled table">
       <thead class="">
@@ -79,7 +77,19 @@ export default {
         this.$emit('cart-updated', response)
         this.qty = 1
       })
-    }
+    },
+    getProductThumb: function (product) {
+        console.log(product)
+        var placeholder = 'https://placeholdit.imgix.net/~text?txtsize=69&txt=824%C3%971050&w=824&h=1050'
+        try {
+          var fileId = product.relationships.files.data[1].id
+          console.log(fileId)
+          var imgSrc = 'https://s3-eu-west-1.amazonaws.com/bkt-svc-files-cmty-api-moltin-com/ef4e860a-1d01-4e5c-a6a8-427cfa48a668/' + fileId + '.jpg'
+          return imgSrc || placeholder
+        } catch (e) {
+          return placeholder
+        }
+      }
   }
 }
 </script>

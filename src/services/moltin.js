@@ -11,13 +11,17 @@ export default {
     console.log(Moltin.Products.Filter({}).All())
     return Moltin.Products.Filter({}).All()
   },
-
+  getCategoryById (id) {
+    console.log(Moltin.Categories.Get(id).data.name + ' from moltin')
+    return Moltin.Categories.Get(id)
+  },
   findBySlug (slug) {
+    console.log(slug)
     return Moltin.Products.Filter({
       eq: {
         slug: slug
       }
-    }).With(['main_image', 'brands']).Limit(1).All()
+    }).Limit(1).All()
   },
 
   findByPrice (price) {
