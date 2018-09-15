@@ -15,6 +15,9 @@ export default {
     console.log(Moltin.Categories.Get(id).data.name + ' from moltin')
     return Moltin.Categories.Get(id)
   },
+  getCategoryList () {
+    return Moltin.Categories.All()
+  },
   findBySlug (slug) {
     console.log(slug)
     return Moltin.Products.Filter({
